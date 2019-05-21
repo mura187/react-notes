@@ -3,15 +3,16 @@ import PropTypes from 'prop-types';
 import { SketchPicker } from 'react-color'; 
 import Note from './Note';
 import './Board.css';
+import {connect} from  'react-redux';
 
 class Board extends Component{
   constructor(props){
     super(props);
-    this.state = {
-      notes: [],
-      background: 'yellow',
+    /*this.state = {
+      notes: [0,1],
+      background: 'green',
       showColorPicker: false
-    };
+    };*/
   }
 
   // componentWillMount(){
@@ -32,7 +33,8 @@ class Board extends Component{
   };
 
   add = (text) => {
-    this.setState({text, showColorPicker: true});
+    //this.setState({text, showColorPicker: true});
+    this.props.dispatch({type:"ADD"})
   };
 
   update = (newText, id) => {
@@ -78,12 +80,12 @@ class Board extends Component{
   render(){
     return (
       <div className="board">
-        {this.state.notes.map( this.eachNote )}
-        <button onClick={() => this.add('New note')}>+</button>
-        { this.state.showColorPicker ?
+        {this.props.notes.map( this.eachNote )}
+        <button onClick={() => this.add('новая заметка')}>+</button>
+        { this.props.showColorPicker ?
           <div className="color-picker">
             <SketchPicker
-              color={ this.state.background }
+              color={ this.props.background }
               onChangeComplete={this.handleChangeComplete}/>
           </div> :
           null
@@ -97,4 +99,9 @@ Board.propTypes = {
   count: PropTypes.number
 };
 
-export default Board;
+const mapStateToProps = (state) => ({
+  notes: [0,1],
+  background: 'green',
+  showColorPicker: false
+})
+export default connect(mapStateToProps)(Board);

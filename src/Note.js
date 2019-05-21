@@ -1,14 +1,9 @@
 import React, { Component } from 'react';
 import Draggable from 'react-draggable';
 import './Note.css';
-
+import {connect} from  'react-redux';
 class Note extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      editing: false
-    };
-  }
+   
 
   componentWillMount() {
     this.style =  {
@@ -35,10 +30,11 @@ class Note extends Component {
   }
 
   edit = () => {
-    this.setState({
+    /*this.setState({
       editing: true,
       background: 'yellow'
-    });
+    });*/ 
+    this.props.dispatch({type: "EDIT"})
   }
 
   save = () => {
@@ -67,7 +63,7 @@ class Note extends Component {
         style={this.style}>
         <p>{this.props.children}</p>
         <span>
-          <button onClick={this.edit}>Edit</button>
+          <button onClick={this.edit.bind()}>Edit</button>
           <button onClick={this.remove}>X</button>
         </span>
       </div>
@@ -78,12 +74,14 @@ class Note extends Component {
     return(
       <Draggable>
         {
-          this.state.editing ? this.renderForm()
+          this.props.editing ? this.renderForm()
                              :  this.renderDisplay()
         }
       </Draggable>
     );
   }
 }
-
-export default Note;
+const mapStateToProps = (state) => ({
+  editing:state.editing
+})
+export default connect(mapStateToProps)(Note);
