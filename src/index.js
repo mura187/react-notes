@@ -9,7 +9,7 @@ import {createStore} from 'redux';
 import {Provider} from 'react-redux';
 
 const initialState = {
-    text,
+    text:'a',
     notes: [0,1],
     background: 'red',
     showColorPicker: false
