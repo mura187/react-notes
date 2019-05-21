@@ -8,7 +8,7 @@ div#root{
 
 div.board {
   width: 100%;
-  /*background: #eab92d;*/
+  background: #eab92d;
 }
 
 .board > button {

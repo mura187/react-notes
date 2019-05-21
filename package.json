@@ -9,7 +9,8 @@
     "react-draggable": "^3.3.0",
     "react-redux": "^7.0.3",
     "react-scripts": "3.0.1",
-    "redux": "^4.0.1"
+    "redux": "^4.0.1",
+    "redux-chunk": "^1.0.11"
   },
   "scripts": {
     "start": "react-scripts start",
