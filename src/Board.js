@@ -1,107 +1,89 @@
 import React, { Component } from 'react';
+import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import { SketchPicker } from 'react-color';
+import { SketchPicker } from 'react-color'; 
 import Note from './Note';
 import './Board.css';
+import { addTodo, updateTodo, deleteTodo } from './redux/actions';
 
+class Board extends Component{
+  constructor(props){
+    super(props);
+    this.state = {
+      background: 'yellow',
+      showColorPicker: false
+    };
+  }
 
+  nextId = () =>{
+    this.uniqueId = this.uniqueId || this.props.notes.length;
+    return this.uniqueId++;
+  };
 
-class Board extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			notes: [],
-			background: 'yellow',
-			showColorPicker: false
-		};
-		this.state.notes = this.props.store.getState();
-	}
+  add = (text) => {
+    this.setState({text, showColorPicker: true});
+  };
 
-	// componentWillMount(){
-	//   if(this.props.count){
-	//     let url = `http://baconipsum.com/api/?type=all-meat&sentences=${this.props.count}`;
-	//     fetch(url)
-	//           .then(results => results.json())
-	//           .then(array => array[0])
-	//           .then(text => text.split('. '))
-	//           .then(array => array.forEach(sentence => this.add(sentence)))
-	//           .catch(err => console.log("Didn't connect to the API", err));
-	//   }
-	// }
+  update = (newText, id) => {
+    this.props.updateTodo(id, newText);
+  };
 
-	nextId = () => {
-		this.uniqueId = this.uniqueId || this.state.notes.length;
-		return this.uniqueId++;
-	};
+  remove = (id) => {
+    this.props.deleteTodo(id);
+  };
 
-	add = (text) => {
-		this.setState({ text, showColorPicker: true });
-	};
+  handleChangeComplete = (color) => {
 
-	update = (newText, id) => {
-		console.log(this.props)
-		this.props.store.dispatch({ type: 'SAVE_NOTES', data:this.state.notes });
-		let notes = this.state.notes.map(
-			note => (note.id !== id) ?
-				note :
-				{
-					...note,
-					note: newText
-				}
-		);
-		this.setState({ notes });
-	};
+    this.props.addTodo({
+      id: this.nextId(),
+      note: this.state.text,
+      color: color.hex
+    });
+    this.setState({showColorPicker: false});
+  };
 
-	remove = (id) => {
-		let notes = this.state.notes.filter(note => note.id !== id);
-		this.setState({ notes });
-	};
+  eachNote = (note) => {
+    return (<Note key={note.content.id}
+                  id={note.content.id}
+                  background={note.content.color}
+                  onChange={this.update}
+                  onRemove={this.remove}>
+                    {note.content.note}
+                  </Note>
+    )
+  };
 
-	handleChangeComplete = (color) => {
-		let notes = [
-			...this.state.notes,
-			{
-				id: this.nextId(),
-				note: this.state.text,
-				color: color.hex
-			}
-		];
-		
-		this.setState({ notes, showColorPicker: false });
-		this.props.store.dispatch({ type: 'SAVE_NOTES', data:this.state.notes });
-	};
-
-	eachNote = (note) => {
-		return (<Note key={note.id}
-			id={note.id}
-			background={note.color}
-			onChange={this.update}
-			onRemove={this.remove}>
-			{note.note}
-		</Note>
-		)
-	};
-
-	render() {
-		return (
-			<div className="board">
-				{this.state.notes.map(this.eachNote)}
-				<button onClick={() => this.add('New note')}>+</button>
-				{this.state.showColorPicker ?
-					<div className="color-picker">
-						<SketchPicker
-							color={this.state.background}
-							onChangeComplete={this.handleChangeComplete} />
-					</div> :
-					null
-				}
-			</div>
-		);
-	}
+  render(){
+    return (
+      <div className="board">
+        {this.props.notes.map( this.eachNote )}
+        <button onClick={() => this.add('New note')}>+</button>
+        { this.state.showColorPicker ?
+          <div className="color-picker">
+            <SketchPicker
+              color={ this.state.background }
+              onChangeComplete={this.handleChangeComplete}/>
+          </div> :
+          null
+        }
+      </div>
+    );
+  }
 }
 
 Board.propTypes = {
-	count: PropTypes.number
+  count: PropTypes.number
 };
 
-export default Board;
+const mapStateToProps = (state) => {
+  return {
+    notes: state.todos.notes
+  }
+};
+
+export default connect(
+  mapStateToProps,
+  { addTodo, updateTodo, deleteTodo }
+)(Board)
+
+// export default Board;
